@@ -9,11 +9,11 @@ User = get_user_model()
 
 class StaticURLTests(TestCase):
     def test_homepage(self):
-         #Создаем экземпляр клиента
+
         guest_client = Client()
-        #Делаем запрос к главной странице и проверяем статус
+
         response = guest_client.get('/')
-         #Утверждаем, что для прохождения теста код должен быть равен 200
+
         self.assertEqual(response.status_code, 200)
 
 
@@ -24,30 +24,30 @@ class TaskURLTests(TestCase):
         cls.user = get_user_model().objects.create_user(username="Leon")
 
         cls.Group = Group.objects.create(
-            title = "Какое то название",
-            slug = "test-slag",
-            description = "какое то описание")
-        
+            title="Какое то название",
+            slug="test-slag",
+            description="какое то описание")
+
         cls.Post = Post.objects.create(
-            text = "Красивое описание",
-            group = cls.Group,
-            author = cls.user)
+            text="Красивое описание",
+            group=cls.Group,
+            author=cls.user)
 
     def setUp(self):
-         # Создаем неавторизованный клиент
+        # Создаем неавторизованный клиент
         self.guest_client = Client()
         # Создаем пользователя
         self.user = User.objects.create_user(username='AndreyG')
-         # Создаем второй клиент
+        # Создаем второй клиент
         self.authorized_client = Client()
-         # Авторизуем пользователя
+        # Авторизуем пользователя
         self.authorized_client.force_login(self.user)
 
     def test_urls_uses_correct_template(self):
         templates_url_names = {
-            "index.html" : "/",
+            "index.html": "/",
             "group.html": "/group/test-slag/",
-            "new.html" : "/new/"}
+            "new.html": "/new/"}
 
         for template, reverse_name in templates_url_names.items():
             with self.subTest():
@@ -69,5 +69,3 @@ class TaskURLTests(TestCase):
         """Страница /new/ доступна любому пользователю."""
         response = self.guest_client.get('/new/')
         self.assertEqual(response.status_code, 200)
-
-
