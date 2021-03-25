@@ -28,18 +28,19 @@ class TaskURLTests(TestCase):
             reverse("index"): "index.html",
             reverse("new"): "new.html",
             reverse("group",
-                    kwargs = {"slug": cls.group.slug}): "group.html",
+                    kwargs={"slug": cls.group.slug}): "group.html",
             reverse("profile",
                     kwargs={"username": cls.user.username}): "profile.html",
             reverse("post",
-                    kwargs={"username": cls.user.username, "post_id": cls.post.id}): "post.html"}
+                    kwargs={"username": cls.user.username,
+                            "post_id": cls.post.id}): "post.html"}
 
     def setUp(self):
         self.guest_client = Client()
         self.user = User.objects.create_user(username='AndreyG')
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
-            
+
     def test_other_pages_authorized_user_templates(self):
         for page, template in self.templates_url_names.items():
             response = self.authorized_client.get(page)

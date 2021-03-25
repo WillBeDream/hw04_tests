@@ -114,13 +114,12 @@ class PaginatorViewsTest(TestCase):
                 group=cls.group
             )
 
-    def setUp(self): 
-        self.guest_client = Client() 
- 
+    def setUp(self):
+        self.guest_client = Client()
 
-    def test_index_first_page_contains_ten_records(self): 
-        response = self.guest_client.get(reverse("index")) 
-        self.assertEqual(len(response.context.get("page").object_list), 10, 
+    def test_index_first_page_contains_ten_records(self):
+        response = self.guest_client.get(reverse("index"))
+        self.assertEqual(len(response.context.get("page").object_list), 10,
                          "Количество записей не равняется 10")
 
     def test_group_first_page_contains_ten_records(self):
