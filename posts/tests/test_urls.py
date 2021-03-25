@@ -1,20 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
+from django.urls import reverse
 
 from ..models import Group, Post
 
 
 User = get_user_model()
-
-
-class StaticURLTests(TestCase):
-    def test_homepage(self):
-
-        guest_client = Client()
-
-        response = guest_client.get('/')
-
-        self.assertEqual(response.status_code, 200)
 
 
 class TaskURLTests(TestCase):
@@ -23,36 +14,37 @@ class TaskURLTests(TestCase):
         super().setUpClass()
         cls.user = get_user_model().objects.create_user(username="Leon")
 
-        cls.Group = Group.objects.create(
+        cls.group = Group.objects.create(
             title="Какое то название",
             slug="test-slag",
             description="какое то описание")
 
-        cls.Post = Post.objects.create(
+        cls.post = Post.objects.create(
             text="Красивое описание",
-            group=cls.Group,
+            group=cls.group,
             author=cls.user)
 
+        cls.templates_url_names = {
+            reverse("index"): "index.html",
+            reverse("new"): "new.html",
+            reverse("group",
+                    kwargs = {"slug": cls.group.slug}): "group.html",
+            reverse("profile",
+                    kwargs={"username": cls.user.username}): "profile.html",
+            reverse("post",
+                    kwargs={"username": cls.user.username, "post_id": cls.post.id}): "post.html"}
+
     def setUp(self):
-        # Создаем неавторизованный клиент
         self.guest_client = Client()
-        # Создаем пользователя
         self.user = User.objects.create_user(username='AndreyG')
-        # Создаем второй клиент
         self.authorized_client = Client()
-        # Авторизуем пользователя
         self.authorized_client.force_login(self.user)
-
-    def test_urls_uses_correct_template(self):
-        templates_url_names = {
-            "index.html": "/",
-            "group.html": "/group/test-slag/",
-            "new.html": "/new/"}
-
-        for template, reverse_name in templates_url_names.items():
-            with self.subTest():
-                response = self.authorized_client.get(reverse_name)
-                self.assertTemplateUsed(response, template)
+            
+    def test_other_pages_authorized_user_templates(self):
+        for page, template in self.templates_url_names.items():
+            response = self.authorized_client.get(page)
+            self.assertTemplateUsed(response, template,
+                                    f"{page} шаблон {template} не работает")
 
     def test_home_url_exists_at_desired_location(self):
         """Страница / доступна любому пользователю."""
@@ -65,7 +57,16 @@ class TaskURLTests(TestCase):
         response = self.authorized_client.get('/group/test-slag/')
         self.assertEqual(response.status_code, 200)
 
-    def test_task_added_url_exists_at_desired_location(self):
-        """Страница /new/ доступна любому пользователю."""
-        response = self.guest_client.get('/new/')
+    def test_post_page_exists_at_desired_location_authorized(self):
+        """Cтраница /new/ доступна авторизированным пользователям"""
+        response = self.authorized_client.get("/new/")
         self.assertEqual(response.status_code, 200)
+
+    def test_post_edit_guest_client_200(self):
+        """Проверки для страницы post_edit(post_new.html)"""
+        response = self.guest_client.get(
+            reverse("post_edit",
+                    kwargs={"username": self.user.username,
+                            "post_id": 1}), follow=True)
+        self.assertEqual(response.status_code, 200,
+                         "post_edit пользователь гость не может зайти.")

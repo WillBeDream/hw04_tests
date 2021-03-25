@@ -6,12 +6,10 @@ class AboutAuthorView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Здесь можно произвести какие-то действия для создания контекста.
-        # Для примера в словарь просто передаются две строки
         context['just_title'] = 'Привет, меня зовут Дмитрий Волков)'
         context['just_text'] = 'Эта страничка обо мне'
-        context['just_text_2'] = 'учусь программировать,'
-        'маленькими шагами иду в необъятный мир'
+        context['just_text_2'] = ('учусь программировать,',
+                                  'маленькими шагами иду в необъятный мир',)
         return context
 
 

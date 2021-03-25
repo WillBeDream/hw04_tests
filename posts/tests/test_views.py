@@ -28,7 +28,7 @@ class TaskURLTests(TestCase):
             author=cls.user)
 
     def setUp(self):
-        # Создаем авторизованный клиент
+        self.guest_client = Client()
         self.user = User.objects.create_user(username='StasBasov')
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
@@ -38,13 +38,14 @@ class TaskURLTests(TestCase):
         templates_pages_names = {
             "index.html": reverse("index"),
             "group.html": reverse("group", kwargs={"slug": "test-slag"}),
-            "new.html": reverse("new"), }
+            "new.html": reverse("new"),
+        }
         for template, reverse_name in templates_pages_names.items():
             with self.subTest(reverse_name=reverse_name):
                 response = self.authorized_client.get(reverse_name)
                 self.assertTemplateUsed(response, template)
 
-    def test_contest_index_page(self):
+    def test_context_index_page(self):
         """ Тест контекст index.html"""
         response = self.creator_user.get(reverse("index"))
         self.assertEqual(
@@ -113,10 +114,18 @@ class PaginatorViewsTest(TestCase):
                 group=cls.group
             )
 
-    def setUp(self):
-        self.guest_client = Client()
+    def setUp(self): 
+        self.guest_client = Client() 
+ 
 
-    def test_index_first_page_contains_ten_records(self):
-        response = self.guest_client.get(reverse("index"))
-        self.assertEqual(len(response.context.get("page").object_list), 10,
+    def test_index_first_page_contains_ten_records(self): 
+        response = self.guest_client.get(reverse("index")) 
+        self.assertEqual(len(response.context.get("page").object_list), 10, 
                          "Количество записей не равняется 10")
+
+    def test_group_first_page_contains_ten_records(self):
+        """Тест пагинатор, записей на 1 странице  10"""
+        response = self.guest_client.get(reverse(
+            "group",
+            kwargs={"slug": "test-slug"}))
+        self.assertEqual(len(response.context.get("page").object_list), 10)
