@@ -117,14 +117,14 @@ class PaginatorViewsTest(TestCase):
     def setUp(self):
         self.guest_client = Client()
 
-    def test_index_first_page_contains_ten_records(self):
-        response = self.guest_client.get(reverse("index"))
-        self.assertEqual(len(response.context.get("page").object_list), 10,
-                         "Количество записей не равняется 10")
+    def first_page_contains(self):
+        templates_url_names = {
+            reverse("index"): 10,
+            reverse("group",
+                    kwargs={"slug": "test-slug"}): 10}
 
-    def test_group_first_page_contains_ten_records(self):
-        """Тест пагинатор, записей на 1 странице  10"""
-        response = self.guest_client.get(reverse(
-            "group",
-            kwargs={"slug": "test-slug"}))
-        self.assertEqual(len(response.context.get("page").object_list), 10)
+        for value, expected in templates_url_names.items():
+            with self.subTest(value=value):
+                responce = self.guest_client.get(value)
+                self.assertEqual(responce, expected)
+            

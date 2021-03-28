@@ -47,22 +47,27 @@ class TaskURLTests(TestCase):
             self.assertTemplateUsed(response, template,
                                     f"{page} шаблон {template} не работает")
 
-    def test_home_url_exists_at_desired_location(self):
-        """Страница / доступна любому пользователю."""
-        response = self.guest_client.get('/')
-        self.assertEqual(response.status_code, 200)
+    def test_url_desired_location(self):
+        """Проверки для "глобальных" юрлов"""
+        url_names = {
+            reverse("index"): 200,
+            reverse("new"): 200}
+        for value, status in url_names.items(): 
+            with self.subTest(value=value): 
+                response = self.guest_client.get(value) 
+                self.assertEqual(response.status_code, status)
 
-    def test_task_detail_url_exists_at_desired_location_authorized(self):
-        """Страница /group/test-slug/ доступна авторизованному
-        пользователю."""
-        response = self.authorized_client.get('/group/test-slag/')
-        self.assertEqual(response.status_code, 200)
-
-    def test_post_page_exists_at_desired_location_authorized(self):
-        """Cтраница /new/ доступна авторизированным пользователям"""
-        response = self.authorized_client.get("/new/")
-        self.assertEqual(response.status_code, 200)
-
+    def test_url_desired_location_authorized(self):
+        """Проверки для "локальных" юрлов"""
+        url_names = {
+            reverse("group",
+                    kwargs={"slug": "test-slag"}): 200
+        }
+        for value, status in url_names.items(): 
+            with self.subTest(value=value):
+                response = self.authorized_client.get(value)
+                self.assertEqual(response.status_code, status)
+    
     def test_post_edit_guest_client_200(self):
         """Проверки для страницы post_edit(post_new.html)"""
         response = self.guest_client.get(
@@ -71,3 +76,5 @@ class TaskURLTests(TestCase):
                             "post_id": 1}), follow=True)
         self.assertEqual(response.status_code, 200,
                          "post_edit пользователь гость не может зайти.")
+
+    
