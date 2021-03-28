@@ -90,7 +90,7 @@ class TaskURLTests(TestCase):
         self.assertEqual(Post.objects.count(), posts_count)
         self.assertRedirects(response, reverse("post", kwargs=kwargs))
 
-    def test_guest_client_cant_create_posts(self): 
+    def test_guest_client_cant_create_posts(self):
         """неавторизированный пользователь не делает посты"""
         # я пару дней его делал надеюсь правильно)
         posts_count = Post.objects.count()
