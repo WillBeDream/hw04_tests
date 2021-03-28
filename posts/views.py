@@ -57,7 +57,6 @@ def profile(request, username):
     context = {
         "page": page,
         "posts_count": posts_count,
-        "paginator": paginator,
         "posts": posts,
         "author_posts": author_posts,
     }
