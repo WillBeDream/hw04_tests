@@ -52,9 +52,9 @@ class TaskURLTests(TestCase):
         url_names = {
             reverse("index"): 200,
             reverse("new"): 200}
-        for value, status in url_names.items(): 
-            with self.subTest(value=value): 
-                response = self.guest_client.get(value) 
+        for value, status in url_names.items():
+            with self.subTest(value=value):
+                response = self.guest_client.get(value)
                 self.assertEqual(response.status_code, status)
 
     def test_url_desired_location_authorized(self):
@@ -63,11 +63,11 @@ class TaskURLTests(TestCase):
             reverse("group",
                     kwargs={"slug": "test-slag"}): 200
         }
-        for value, status in url_names.items(): 
+        for value, status in url_names.items():
             with self.subTest(value=value):
                 response = self.authorized_client.get(value)
                 self.assertEqual(response.status_code, status)
-    
+
     def test_post_edit_guest_client_200(self):
         """Проверки для страницы post_edit(post_new.html)"""
         response = self.guest_client.get(
@@ -76,5 +76,3 @@ class TaskURLTests(TestCase):
                             "post_id": 1}), follow=True)
         self.assertEqual(response.status_code, 200,
                          "post_edit пользователь гость не может зайти.")
-
-    

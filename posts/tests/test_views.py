@@ -127,4 +127,3 @@ class PaginatorViewsTest(TestCase):
             with self.subTest(value=value):
                 responce = self.guest_client.get(value)
                 self.assertEqual(responce, expected)
-            
