@@ -1,4 +1,4 @@
-
+from http import HTTPStatus
 from django.test import Client, TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -47,7 +47,7 @@ class TaskURLTests(TestCase):
         self.assertEqual(
             response.status_code,
 
-            200,
+            HTTPStatus.OK,
             "Страница new.html не отвечает")
         self.assertEqual(
             Post.objects.count(),
@@ -67,7 +67,7 @@ class TaskURLTests(TestCase):
             data=from_data, follow=True)
 
         self.assertEqual(
-            response.status_code, 200,
+            response.status_code, HTTPStatus.OK,
             "Страница post_new.html не отвечает")
 
         self.assertEqual(
@@ -92,17 +92,20 @@ class TaskURLTests(TestCase):
 
     def test_guest_client_cant_create_posts(self):
         """неавторизированный пользователь не делает посты"""
-        # я пару дней его делал надеюсь правильно)
         posts_count = Post.objects.count()
         form_data = {
             'text': 'тестовый текст',
             'group': self.group.id,
-
-        }
+            'author': self.post.author}
         response = self.guest_client.post(
             reverse('new'),
             data=form_data,
             follow=True
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(Post.objects.count(), posts_count + 1)
+        self.assertTrue(
+            Post.objects.filter(
+                text='тестовый текст',
+                group=self.group.id,
+                author=self.post.author).exists())

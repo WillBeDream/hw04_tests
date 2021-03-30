@@ -48,13 +48,15 @@ class TaskURLTests(TestCase):
     def test_context_index_page(self):
         """ Тест контекст index.html"""
         response = self.creator_user.get(reverse("index"))
+        # мне кажется вынести в отдельную переменную - это лучше
+        show_context = response.context.get("page")[0]
         self.assertEqual(
-            response.context.get("page")[0].text, self.post.text)
+            show_context.text, self.post.text)
         self.assertEqual(
-            response.context.get("page")[0].author.username,
+            show_context.author.username,
             self.post.author.username)
         self.assertEqual(
-            response.context.get("page")[0].group.title, self.post.group.title)
+            show_context.group.title, self.post.group.title)
 
     def test_group_pages_show_correct_context(self):
         response = self.creator_user.get(
@@ -64,13 +66,14 @@ class TaskURLTests(TestCase):
             response.context.get("group").title, self.group.title)
 
     def test_content_new(self):
-        """Тесе контент new.html"""
+        """Тесе контекст new.html"""
         response = self.creator_user.get(reverse("new"))
+        show_context = response.context.get("form")
         self.assertIsInstance(
-            response.context.get("form").fields.get("text"),
+            show_context.fields.get("text"),
             forms.fields.CharField)
         self.assertIsInstance(
-            response.context.get("form").fields.get("group"),
+            show_context.fields.get("group"),
             forms.fields.ChoiceField)
 
     def test_create_content_index(self):
@@ -121,7 +124,9 @@ class PaginatorViewsTest(TestCase):
         templates_url_names = {
             reverse("index"): 10,
             reverse("group",
-                    kwargs={"slug": "test-slug"}): 10}
+                    kwargs={"slug": "test-slug"}): 10,
+            reverse("group",
+                    kwargs={"slug": "test-slug"}) + "?page=2": 3}
 
         for value, expected in templates_url_names.items():
             with self.subTest(value=value):

@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -50,8 +51,8 @@ class TaskURLTests(TestCase):
     def test_url_desired_location(self):
         """Проверки для "глобальных" юрлов"""
         url_names = {
-            reverse("index"): 200,
-            reverse("new"): 200}
+            reverse("index"): HTTPStatus.OK,
+            reverse("new"): HTTPStatus.OK}
         for value, status in url_names.items():
             with self.subTest(value=value):
                 response = self.guest_client.get(value)
@@ -61,7 +62,7 @@ class TaskURLTests(TestCase):
         """Проверки для "локальных" юрлов"""
         url_names = {
             reverse("group",
-                    kwargs={"slug": "test-slag"}): 200
+                    kwargs={"slug": "test-slag"}): HTTPStatus.OK
         }
         for value, status in url_names.items():
             with self.subTest(value=value):
@@ -74,5 +75,5 @@ class TaskURLTests(TestCase):
             reverse("post_edit",
                     kwargs={"username": self.user.username,
                             "post_id": 1}), follow=True)
-        self.assertEqual(response.status_code, 200,
+        self.assertEqual(response.status_code, HTTPStatus.OK,
                          "post_edit пользователь гость не может зайти.")
