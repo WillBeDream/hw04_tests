@@ -48,7 +48,6 @@ class TaskURLTests(TestCase):
     def test_context_index_page(self):
         """ Тест контекст index.html"""
         response = self.creator_user.get(reverse("index"))
-        # мне кажется вынести в отдельную переменную - это лучше
         show_context = response.context.get("page")[0]
         self.assertEqual(
             show_context.text, self.post.text)
@@ -126,7 +125,7 @@ class PaginatorViewsTest(TestCase):
             reverse("group",
                     kwargs={"slug": "test-slug"}): 10,
             reverse("group",
-                    kwargs={"slug": "test-slug"}) + "?page=2": 3}
+                    kwargs={"slug": "test-slug"}) + {"page": 2}: 3}
 
         for value, expected in templates_url_names.items():
             with self.subTest(value=value):

@@ -26,15 +26,11 @@ class TaskURLTests(TestCase):
             author=cls.user)
 
         cls.templates_url_names = {
-            reverse("index"): "index.html",
-            reverse("new"): "new.html",
-            reverse("group",
-                    kwargs={"slug": cls.group.slug}): "group.html",
-            reverse("profile",
-                    kwargs={"username": cls.user.username}): "profile.html",
-            reverse("post",
-                    kwargs={"username": cls.user.username,
-                            "post_id": cls.post.id}): "post.html"}
+            "/": "index.html",
+            "/new/": "new.html",
+            "/group/test-slag/": "group.html",
+            f"/{cls.user.username}/": "profile.html",
+            f"/{cls.user.username}/{cls.post.id}/": "post.html"}
 
     def setUp(self):
         self.guest_client = Client()
@@ -77,3 +73,8 @@ class TaskURLTests(TestCase):
                             "post_id": 1}), follow=True)
         self.assertEqual(response.status_code, HTTPStatus.OK,
                          "post_edit пользователь гость не может зайти.")
+
+    def test_page404(self):
+        """Проверка пустой страницы. Статус код 404"""
+        response = self.guest_client.get("404/")
+        self.assertEqual(response.status_code, 404, "Статус код 200")

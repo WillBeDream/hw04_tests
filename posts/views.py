@@ -60,7 +60,7 @@ def profile(request, username):
         "posts": posts,
         "author_posts": author_posts,
     }
-    return render(request, 'profile.html', context)
+    return render(request, "profile.html", context)
 
 
 def post_view(request, username, post_id):
